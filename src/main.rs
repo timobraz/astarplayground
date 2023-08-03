@@ -1,12 +1,12 @@
 // use pathfinding::prelude::astar;
 use image::{Rgb, RgbImage};
-use std::fs;
+use std::{char::MAX, fs};
 type Color = Rgb<u8>;
 // type Point = (u32, u32);
 const WHITE: Color = Rgb([255, 255, 255]);
 const BLACK: Color = Rgb([0, 0, 0]);
 const RED: Color = Rgb([255, 0, 0]);
-
+const MAX_NUMBER: u32 = 9765625;
 // #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 // struct Pos(i32, i32);
 // impl Pos {
@@ -35,7 +35,7 @@ const RED: Color = Rgb([255, 0, 0]);
 fn main() {
     let contents = fs::read_to_string("./README2.txt").expect("failed to read");
     let mut numbers = contents.split(' ').map(|num| num.parse::<u32>().unwrap());
-    draw_image(1953125, &mut numbers, 200);
+    draw_image(1953125, &mut numbers, 25);
     // generate_txt(390625, &mut numbers);
     // println!("{:?}", &numcollection);
     // const GOAL: Pos = Pos(1953125, 3125);
@@ -58,15 +58,12 @@ where
     ];
     let mut index = 1;
     let mut nextnum = numbers.next().unwrap();
-    let mut img = RgbImage::from_pixel(widthmax, 5, BLACK);
+    let mut img = RgbImage::from_pixel(widthmax, MAX_NUMBER / linebreak, BLACK);
 
-    while index < 9765625 {
-        // println!("{index} ,{:?}", &nextnum);
+    while index < MAX_NUMBER {
         let line = ((index / linebreak) as f64).floor() as u32;
         let xpixel = index - 1;
         if nextnum == index {
-            // line.push(0);
-            // println!("{index}");
             nextnum = numbers.next().unwrap_or(0);
             if xpixel % linebreak > widthmax {
                 index += 1;
@@ -104,7 +101,7 @@ where
     let mut nextnum = numbers.next().unwrap();
     // let mut numcollection: Vec<Vec<u32>> = vec![];
     // let mut line: Vec<u32> = vec![];
-    while index < 9765625 {
+    while index < MAX_NUMBER {
         // println!("{index} ,{:?}", &nextnum);
         if nextnum == index {
             // line.push(0);
