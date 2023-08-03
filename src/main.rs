@@ -36,6 +36,7 @@ fn main() {
     let contents = fs::read_to_string("./README2.txt").expect("failed to read");
     let mut numbers = contents.split(' ').map(|num| num.parse::<u32>().unwrap());
     draw_image(1953125, &mut numbers, 200);
+    // generate_txt(390625, &mut numbers);
     // println!("{:?}", &numcollection);
     // const GOAL: Pos = Pos(1953125, 3125);
     // let result = astar(
@@ -52,37 +53,42 @@ fn draw_image<I>(linebreak: u32, mut numbers: I, widthmax: u32)
 where
     I: Iterator<Item = u32>,
 {
-    let important_pixels = vec![4687515, 3906260, 3906251];
-    let mut linenum: u32 = 0;
+    let important_pixels = vec![
+        1, 2, 3, 1953128, 3906253, 3906254, 3906255, 3906260, 3906265,
+    ];
     let mut index = 1;
     let mut nextnum = numbers.next().unwrap();
     let mut img = RgbImage::from_pixel(widthmax, 5, BLACK);
 
     while index < 9765625 {
         // println!("{index} ,{:?}", &nextnum);
-        let line = ((index / linebreak) as f64).floor();
+        let line = ((index / linebreak) as f64).floor() as u32;
         let xpixel = index - 1;
         if nextnum == index {
             // line.push(0);
             // println!("{index}");
             nextnum = numbers.next().unwrap_or(0);
-            if xpixel % linebreak > 200 {
+            if xpixel % linebreak > widthmax {
                 index += 1;
                 continue;
             }
             let xoffset = xpixel % linebreak;
-            if important_pixels.contains(&index) {
-                println!("{index}");
-                img.put_pixel(xoffset, line as u32, RED);
+            if let Ok(ind) = important_pixels.binary_search_by(|probe| probe.cmp(&index)) {
+                img.put_pixel(
+                    xoffset,
+                    line,
+                    Rgb([
+                        (255.0
+                            * ((ind as f64 / important_pixels.len() as f64) + 0.5).clamp(0f64, 1.0))
+                        .floor() as u8,
+                        0,
+                        0,
+                    ]),
+                );
             } else {
-                img.put_pixel(xoffset, line as u32, WHITE)
+                img.put_pixel(xoffset, line, WHITE)
             }
         }
-
-        // if xpixel % linebreak == 0 {
-        //     println!("nl {index} {xpixel}");
-        //     linenum += 1;
-        // }
         index += 1;
     }
 
